@@ -11,11 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::create('roles', function (Blueprint $table) {
+            $table->id();
+            $table->string('roleName')->unique(); // e.g. admin, employee
+            $table->timestamps();
+        });
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('firstName');
+            $table->string('lastName');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->foreignId('role_id')->constrained()->onDelete('cascade');
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
@@ -35,6 +41,15 @@ return new class extends Migration
             $table->longText('payload');
             $table->integer('last_activity')->index();
         });
+        Schema::create('tasks', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->text('description')->nullable();
+            $table->enum('status', ['to_do', 'in_progress', 'done'])->default('to_do');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->timestamps();
+            $table->softDeletes(); // deleted_at column
+        });
     }
 
     /**
@@ -42,7 +57,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('roles');
         Schema::dropIfExists('users');
+        Schema::dropIfExists('tasks');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
     }

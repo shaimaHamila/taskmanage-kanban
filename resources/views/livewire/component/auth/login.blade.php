@@ -5,7 +5,7 @@
             <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
                 <div>
                     @if (session('LoginError'))
-                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
+                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
                             role="alert">
                             {{ session('LoginError') }}
                         </div>

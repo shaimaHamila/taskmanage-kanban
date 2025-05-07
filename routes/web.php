@@ -7,5 +7,5 @@ use App\Livewire\Component\User\ListUsers;
 
 
 Route::get('/', Login::class)->name('login');
-Route::get('/todos', ListTasks::class)->middleware('auth')->name('tasks');
+Route::get('/tasks', ListTasks::class)->middleware('auth')->name('tasks');
 Route::get('/users', ListUsers::class)->middleware('auth')->name('users');

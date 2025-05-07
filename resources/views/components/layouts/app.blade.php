@@ -7,6 +7,8 @@
     @vite(['resources/css/app.css'])
     <title>{{ $title ?? 'Page Title' }}</title>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+
     <livewire:styles />
 </head>
 

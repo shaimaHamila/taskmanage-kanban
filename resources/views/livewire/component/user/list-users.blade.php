@@ -1,12 +1,12 @@
 <!-- resources/views/user-list.blade.php -->
 
-<div class="container mx-auto p-6 bg-gray-50 ">
+<div class="container mx-auto   ">
     <!-- Header Section -->
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-semibold text-gray-800">User Management</h1>
         <!-- Add User Button -->
         <button x-data @click="$dispatch('open-user-form')"
-            class="px-5 py-2 bg-indigo-600 text-white rounded-md  hover:bg-indigo-700 transition-all duration-300 flex items-center gap-2">
+            class="cursor-pointer px-5 py-2 bg-blue-600 text-white rounded-md  hover:bg-blue-700 transition-all duration-300 flex items-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
@@ -17,15 +17,15 @@
     <!-- User Table -->
     <div class="bg-white shadow-xs rounded-xs overflow-hidden">
         <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-100">
+            <thead class="bg-gray-50 ">
                 <tr>
-                    <th class="py-3 px-6 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">First
+                    <th class="py-3 px-6 text-left text-sm font-medium text-gray-700  tracking-wider">First
                         Name</th>
-                    <th class="py-3 px-6 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">Last Name
+                    <th class="py-3 px-6 text-left text-sm font-medium text-gray-700  tracking-wider">Last Name
                     </th>
-                    <th class="py-3 px-6 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">Email
+                    <th class="py-3 px-6 text-left text-sm font-medium text-gray-700  tracking-wider">Email
                     </th>
-                    <th class="py-3 px-6 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">Actions
+                    <th class="py-3 px-6 text-left text-sm font-medium text-gray-700  tracking-wider">Actions
                     </th>
                 </tr>
             </thead>

@@ -81,7 +81,7 @@
 
 
     <!-- Desktop sidebar -->
-    <div class="hidden md:flex md:w-72 md:flex-col md:fixed md:inset-y-0 bg-white shadow-xs">
+    <div class="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-white">
         <div class="flex-1 flex flex-col min-h-0">
             <div class="flex-1 flex flex-col pt-8 pb-4 overflow-y-auto">
                 <div class="flex items-center flex-shrink-0 px-6">

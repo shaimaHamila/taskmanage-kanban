@@ -7,33 +7,36 @@ use App\Livewire\Forms\UserType;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 use Livewire\Attributes\On;
+use App\Models\Role;
 
 class FormUser extends Component
 {
-    public UserType $form;
+    public UserType $user;
     public $editingUserId = null;
-    public $isDrawerOpen = false;  // Drawer is initially closed.
+    public $isDrawerOpen = false;
 
     protected $listeners = ['openUserForm'];
 
     #[On('open-user-form')]
     public function openUserForm($userId = null)
     {
-        // Reset the error bag and form fields before loading user data.
         $this->resetErrorBag();
-        $this->form->reset();
+        $this->user->reset();
 
         // If editing an existing user, load the data.
         if ($userId) {
-            $user = User::findOrFail($userId);
-            $this->form->fill($user);
-            $this->editingUserId = $user->id;
+            $userToUpdate = User::findOrFail($userId);
+            $this->user->firstName = $userToUpdate->firstName;
+            $this->user->lastName = $userToUpdate->lastName;
+            $this->user->email = $userToUpdate->email;
+            $this->user->role_id = $userToUpdate->role_id;
+            $this->user->password = ''; // Don't pre-fill password for security reasons
+            $this->editingUserId = $userToUpdate->id;
         } else {
-            // Prepare for creating a new user.
             $this->editingUserId = null;
         }
 
-        $this->isDrawerOpen = true;  // Open the drawer.
+        $this->isDrawerOpen = true;
     }
 
     // Handle user creation.
@@ -41,7 +44,6 @@ class FormUser extends Component
     {
         $this->validateUserData();
 
-        // Create the new user.
         User::create($this->prepareUserData());
 
         session()->flash('message', 'User created successfully.');
@@ -55,7 +57,6 @@ class FormUser extends Component
 
         $user = User::findOrFail($this->editingUserId);
 
-        // Update the user data.
         $user->update($this->prepareUserData(true));
 
         session()->flash('message', 'User updated successfully.');
@@ -66,15 +67,15 @@ class FormUser extends Component
     private function prepareUserData($updating = false)
     {
         $userData = [
-            'firstName' => $this->form->firstName,
-            'lastName' => $this->form->lastName,
-            'email' => $this->form->email,
-            'role_id' => $this->form->role_id,
+            'firstName' => $this->user->firstName,
+            'lastName' => $this->user->lastName,
+            'email' => $this->user->email,
+            'role_id' => $this->user->role_id,
         ];
 
         // If updating, only hash password if provided.
-        if (!$updating || !empty($this->form->password)) {
-            $userData['password'] = Hash::make($this->form->password);
+        if (!$updating || !empty($this->user->password)) {
+            $userData['password'] = Hash::make($this->user->password);
         }
 
         return $userData;
@@ -83,19 +84,23 @@ class FormUser extends Component
     // Validate user data.
     private function validateUserData()
     {
-        $this->form->validate();
+        $this->user->validate();
     }
 
     // Close the drawer.
     public function closeDrawer()
     {
         $this->isDrawerOpen = false;
-        $this->form->reset();
+        $this->user->reset();
         $this->editingUserId = null;
     }
 
     public function render()
     {
-        return view('livewire.component.user.form-user');
+        $roles = Role::all(); // Get all roles
+
+        return view('livewire.component.user.form-user', [
+            'roles' => $roles
+        ]);
     }
 }

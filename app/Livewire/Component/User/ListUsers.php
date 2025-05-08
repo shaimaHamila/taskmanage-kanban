@@ -18,9 +18,20 @@ class ListUsers extends Component
     {
         $user = User::find($userId);
         if ($user) {
-            $user->delete(); // Delete the user from the database
-            $this->users = User::all(); // Refresh the user list
+            $user->delete();
+            $this->users = User::all();
         }
+        // Trigger SweetAlert
+        $this->dispatch('alert', [
+            'type' => 'success',
+            'message' => 'User deleted successfully.',
+            'position' => 'center',
+        ]);
+    }
+    public function updateUserHandler($userId)
+    {
+
+        $this->dispatch('open-user-form', $userId);
     }
     public function render()
     {

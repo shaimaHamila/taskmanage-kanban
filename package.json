@@ -14,6 +14,7 @@
         "vite": "^6.2.4"
     },
     "dependencies": {
-        "livewire": "^0.6.1"
+        "livewire": "^0.6.1",
+        "sweetalert2": "^11.21.0"
     }
 }

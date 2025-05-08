@@ -11,7 +11,7 @@ class ListUsers extends Component
 
     public function mount()
     {
-        $this->users = User::all();  // Fetch all users from the database
+        $this->users = User::all();
     }
 
     public function deleteUser($userId)
@@ -20,13 +20,19 @@ class ListUsers extends Component
         if ($user) {
             $user->delete();
             $this->users = User::all();
+
+            // Success alert
+            $this->dispatch('alert', [
+                'type' => 'success',
+                'message' => 'User deleted successfully.',
+            ]);
+        } else {
+            // Error alert
+            $this->dispatch('alert', [
+                'type' => 'error',
+                'message' => 'User not found.',
+            ]);
         }
-        // Trigger SweetAlert
-        $this->dispatch('alert', [
-            'type' => 'success',
-            'message' => 'User deleted successfully.',
-            'position' => 'center',
-        ]);
     }
     public function updateUserHandler($userId)
     {

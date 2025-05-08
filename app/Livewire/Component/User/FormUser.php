@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 use Livewire\Attributes\On;
 use App\Models\Role;
+use Exception;
+use Illuminate\Validation\ValidationException;
 
 class FormUser extends Component
 {
@@ -39,29 +41,40 @@ class FormUser extends Component
         $this->isDrawerOpen = true;
     }
 
-    // Handle user creation.
-    public function addUser()
+    public function saveUser()
     {
         $this->validateUserData();
+        try {
 
-        User::create($this->prepareUserData());
+            $data = $this->prepareUserData($this->editingUserId !== null);
 
-        session()->flash('message', 'User created successfully.');
-        $this->closeDrawer();
+            // Check for email conflict if creating a new user
+            if (!$this->editingUserId && User::where('email', $this->user->email)->exists()) {
+                throw new Exception('Email already exists.');
+            }
+
+            User::updateOrCreate(
+                ['id' => $this->editingUserId],
+                $data
+            );
+
+            $this->dispatch('alert', [
+                'type' => 'success',
+                'message' => $this->editingUserId ? 'User updated successfully.' : 'User created successfully.',
+            ]);
+
+            $this->closeDrawer();
+        } catch (ValidationException $e) {
+            // Silent if validation fails
+        } catch (Exception $e) {
+            $this->dispatch('alert', [
+                'type' => 'error',
+                'message' => 'Something went wrong: ' . $e->getMessage(),
+                'timer' => 6000,
+            ]);
+        }
     }
 
-    // Handle user update.
-    public function updateUser()
-    {
-        $this->validateUserData();
-
-        $user = User::findOrFail($this->editingUserId);
-
-        $user->update($this->prepareUserData(true));
-
-        session()->flash('message', 'User updated successfully.');
-        $this->closeDrawer();
-    }
 
     // Prepare the user data (handle password hashing).
     private function prepareUserData($updating = false)

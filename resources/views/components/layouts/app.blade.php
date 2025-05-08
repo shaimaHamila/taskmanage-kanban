@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    @vite(['resources/css/app.css'])
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <title>{{ $title ?? 'Page Title' }}</title>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -33,18 +33,6 @@
 
     <livewire:scripts />
 </body>
-<script type="module">
-    document.addEventListener('alert', (event) => {
-        console.log('Alert event triggered', event.detail);
-        let data = event.detail[0];
-        Swal.fire({
-            icon: data.type,
-            title: data.message,
-            position: data.position ?? 'center',
-            showConfirmButton: false,
-            timer: 1500,
-        });
-    });
-</script>
+<script type="module"></script>
 
 </html>

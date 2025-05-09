@@ -3,6 +3,7 @@
 namespace App\Livewire\Component\Layout;
 
 use Livewire\Component;
+use Illuminate\Support\Facades\Auth;
 
 class SideBar extends Component
 {
@@ -16,6 +17,12 @@ class SideBar extends Component
     {
         $this->dispatch('componentSelected', component: $component);
     }
+    public function handleLogout()
+    {
+        Auth::logout();
+        return redirect()->route('login');
+    }
+
     public function render()
     {
         return view('livewire.component.layout.sidebar');

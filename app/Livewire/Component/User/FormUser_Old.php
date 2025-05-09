@@ -11,19 +11,20 @@ use App\Models\Role;
 use Exception;
 use Illuminate\Validation\ValidationException;
 
-class FormUser extends Component
+class FormUser_Old extends Component
 {
     public UserType $user;
     public $editingUserId = null;
-    public $isDrawerOpen = false;
     public $roles = [];
-    protected $listeners = ['openUserForm'];
 
-    #[On('open-user-form')]
-    public function openUserForm($userId = null)
+
+    public function mount($userId = null)
     {
+        $this->roles = Role::all();
+
         $this->resetErrorBag();
         $this->user->reset();
+        $this->editingUserId = null;
 
         // If editing an existing user, load the data.
         if ($userId) {
@@ -37,13 +38,10 @@ class FormUser extends Component
         } else {
             $this->editingUserId = null;
         }
-
-        $this->isDrawerOpen = true;
     }
 
     public function saveUser()
     {
-
         // Prepare base rules
         $rules = [
             'role_id' => 'required',
@@ -59,7 +57,7 @@ class FormUser extends Component
         }
 
         // Now apply the rules
-        $this->user->validate($rules);
+        $this->validateUserData($rules);
         try {
 
             if (!$this->editingUserId && User::where('email', $this->user->email)->exists()) {
@@ -86,7 +84,7 @@ class FormUser extends Component
                 'type' => 'success',
                 'message' => $this->editingUserId ? 'User updated successfully.' : 'User created successfully.',
             ]);
-            $this->dispatch('update-users-list'); // Refresh the user list
+
             $this->closeDrawer();
         } catch (ValidationException $e) {
             // Silent if validation fails
@@ -98,7 +96,6 @@ class FormUser extends Component
             ]);
         }
     }
-
 
 
     // Prepare the user data (handle password hashing).
@@ -120,25 +117,17 @@ class FormUser extends Component
     }
 
     // Validate user data.
-    private function validateUserData()
+    private function validateUserData($rules)
     {
-        $this->user->validate();
+        $this->user->validate($rules);
     }
 
-    // Close the drawer.
-    public function closeDrawer()
-    {
-        $this->isDrawerOpen = false;
-        $this->user->reset();
-        $this->editingUserId = null;
-    }
 
     public function render()
     {
-        $this->roles = Role::all();
 
         return view('livewire.component.user.form-user', [
-            'roles' => $this->roles,
+            'editingUserId' => $this->editingUserId,
         ]);
     }
 }

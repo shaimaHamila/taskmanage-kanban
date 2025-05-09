@@ -7,6 +7,8 @@ use Livewire\Form;
 
 class UserType extends Form
 {
+    #[Validate('required')]
+    public $role_id;
     #[Validate('required|string|min:2')]
     public $firstName;
 
@@ -16,9 +18,6 @@ class UserType extends Form
     #[Validate('required|email')]
     public $email;
 
-    #[Validate('required|min:6')]
+    #[Validate()]
     public $password;
-
-    #[Validate('required|exists:roles,id')]
-    public $role_id;
 }

@@ -5,6 +5,7 @@ namespace App\Livewire\Component\Auth;
 use Livewire\Component;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\On;
 
 class Login extends Component
 {
@@ -33,6 +34,7 @@ class Login extends Component
         Auth::login($user);
         return redirect()->route('tasks');
     }
+
     public function mount()
     {
         if (Auth::check()) {

@@ -6,7 +6,7 @@
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-semibold text-gray-800">User Management</h1>
             <!-- Add User Button -->
-            <button x-data @click="$dispatch('open-user-form')"
+            <button wire:click.prevent="dispatch('open-user-form')"
                 class="cursor-pointer px-5 py-1.5 bg-blue-600 text-white rounded-md  hover:bg-blue-700 transition-all duration-300 flex items-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg">
@@ -40,8 +40,8 @@
                                 <td class="py-4 px-6 text-sm">
                                     <div class="flex space-x-2">
                                         <!-- View Button -->
-                                        <a href="/users/{{ $user->id }}"
-                                            class="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-all duration-300 flex items-center gap-2">
+                                        <button wire:click.prevent="openUserDetails({{ $user->id }})"
+                                            class="cursor-pointer px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-all duration-300 flex items-center gap-2">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -50,10 +50,9 @@
                                                     d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
                                                 </path>
                                             </svg>
-                                        </a>
-
+                                        </button>
                                         <!-- Edit Button -->
-                                        <button x-data @click="$dispatch('open-user-form', {{ $user->id }})"
+                                        <button wire:click.prevent="updateUserHandler({{ $user->id }})"
                                             class="cursor-pointer px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-all duration-300 flex items-center gap-2">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -85,4 +84,6 @@
 
     <!-- Drawer for Add/Edit User -->
     <livewire:component.user.form-user />
+    <!-- Drawer Component -->
+    <livewire:component.layout.drawer />
 </div>

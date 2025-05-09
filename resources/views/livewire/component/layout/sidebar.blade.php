@@ -119,8 +119,8 @@
 
             <!-- Logout -->
             <div class="flex-shrink-0 flex border-t border-gray-200 p-4">
-                <a href="{{ route('login') }}"
-                    class="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors duration-200">
+                <a wire:click="handleLogout"
+                    class="w-full cursor-pointer flex items-center justify-between px-4 py-3 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors duration-200">
                     <div class="flex items-center space-x-2">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

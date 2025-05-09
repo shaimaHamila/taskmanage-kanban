@@ -8,6 +8,7 @@ use App\Enums\TaskStatus;
 
 class TaskType extends Form
 {
+    public $id;
     #[Validate('required|string|min:3')]
     public $title;
 

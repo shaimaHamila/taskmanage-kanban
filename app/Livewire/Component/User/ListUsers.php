@@ -18,6 +18,8 @@ class ListUsers extends Component
     public function refreshUsers()
     {
         $this->users = User::latest()->get();
+        //reload the component
+
     }
     public function openUserDetails($userId)
     {
@@ -56,7 +58,7 @@ class ListUsers extends Component
         $user = User::find($userId);
         if ($user) {
             $user->delete();
-            $this->users = User::all();
+            $this->refreshUsers();
 
             // Success alert
             $this->dispatch('alert', [

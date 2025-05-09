@@ -1,13 +1,12 @@
 <!-- resources/views/user-list.blade.php -->
-
 <div>
     <div class="container mx-auto">
         <!-- Header Section -->
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-semibold text-gray-800">User Management</h1>
+            <h1 class="text-md md:text-xl font-semibold text-gray-800">Total Users: {{ $users->count() }}</h1>
             <!-- Add User Button -->
             <button wire:click.prevent="dispatch('open-user-form')"
-                class="cursor-pointer px-5 py-1.5 bg-blue-600 text-white rounded-md  hover:bg-blue-700 transition-all duration-300 flex items-center gap-2">
+                class="cursor-pointer px-5 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all duration-300 flex items-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -27,6 +26,7 @@
                             <th class="py-3 px-6 text-left text-sm font-medium text-gray-700 tracking-wider">Last Name
                             </th>
                             <th class="py-3 px-6 text-left text-sm font-medium text-gray-700 tracking-wider">Email</th>
+                            <th class="py-3 px-6 text-left text-sm font-medium text-gray-700 tracking-wider">Role</th>
                             <th class="py-3 px-6 text-left text-sm font-medium text-gray-700 tracking-wider">Actions
                             </th>
                         </tr>
@@ -37,6 +37,12 @@
                                 <td class="py-4 px-6 text-sm text-gray-900">{{ $user->firstName }}</td>
                                 <td class="py-4 px-6 text-sm text-gray-900">{{ $user->lastName }}</td>
                                 <td class="py-4 px-6 text-sm text-gray-600">{{ $user->email }}</td>
+                                <td class="py-4 px-6 text-sm">
+                                    <span
+                                        class="{{ $user->role->roleName === 'admin' ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-orange-600' }} px-2 py-1 rounded-full text-xs font-medium">
+                                        {{ ucfirst($user->role->roleName) }}
+                                    </span>
+                                </td>
                                 <td class="py-4 px-6 text-sm">
                                     <div class="flex space-x-2">
                                         <!-- View Button -->
@@ -61,7 +67,6 @@
                                                 </path>
                                             </svg>
                                         </button>
-
                                         <!-- Delete Button -->
                                         <button wire:click="deleteUser({{ $user->id }})"
                                             class="cursor-pointer px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-all duration-300 flex items-center gap-2">

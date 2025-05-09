@@ -1,10 +1,9 @@
 <!-- resources/views/user-list.blade.php -->
-
 <div>
     <div class="container mx-auto">
         <!-- Header Section -->
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-semibold text-gray-800">User Management</h1>
+            <h1 class="text-md md:text-xl font-semibold text-gray-800">Total Users: {{ $users->count() }}</h1>
             <!-- Add User Button -->
             <button wire:click.prevent="dispatch('open-user-form')"
                 class="cursor-pointer px-5 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all duration-300 flex items-center gap-2">
@@ -58,7 +57,6 @@
                                                 </path>
                                             </svg>
                                         </button>
-                                        <!-- Edit Button -->
                                         <!-- Edit Button -->
                                         <button wire:click.prevent="updateUserHandler({{ $user->id }})"
                                             class="cursor-pointer px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-all duration-300 flex items-center gap-2">

@@ -46,7 +46,6 @@ class FormUser extends Component
 
         // Prepare base rules
         $rules = [
-            'role_id' => 'required',
             'firstName' => 'required|string|min:2',
             'lastName' => 'required|string|min:2',
             'email' => 'required|email|unique:users,email,' . ($this->editingUserId ?? 'NULL') . ',id',
@@ -63,11 +62,7 @@ class FormUser extends Component
         try {
 
             if (!$this->editingUserId && User::where('email', $this->user->email)->exists()) {
-                $this->dispatch('alert', [
-                    'type' => 'error',
-                    'message' => 'Email already exists.',
-                    'timer' => 6000,
-                ]);
+
                 return;
             }
 
@@ -81,11 +76,11 @@ class FormUser extends Component
                 ['id' => $this->editingUserId],
                 $data
             );
-
             $this->dispatch('alert', [
                 'type' => 'success',
                 'message' => $this->editingUserId ? 'User updated successfully.' : 'User created successfully.',
             ]);
+
             $this->dispatch('update-users-list'); // Refresh the user list
             $this->closeDrawer();
         } catch (ValidationException $e) {

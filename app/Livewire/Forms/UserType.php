@@ -17,7 +17,5 @@ class UserType extends Form
 
     #[Validate('required|email')]
     public $email;
-
-    #[Validate()]
     public $password;
 }

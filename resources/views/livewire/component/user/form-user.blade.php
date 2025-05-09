@@ -1,16 +1,17 @@
 <div>
     @if ($isDrawerOpen)
-        <div class="fixed inset-0 bg-black/50 z-[999]">
-            <!-- Drawer -->
-            <div
-                class="absolute top-0 right-0 w-full sm:w-1/2 h-screen bg-white shadow-2xl flex flex-col rounded-l-xl transition-transform duration-300 ease-in-out translate-x-0">
+        <div
+            class="fixed inset-0 bg-black/50 z-[999] transition-opacity duration-300 ease-in-out {{ $isDrawerOpen ? 'opacity-100' : 'opacity-0' }}">
+            <div class="absolute top-0 right-0 w-full sm:w-1/2 h-screen bg-white shadow-2xl flex flex-col rounded-l-xl transition-transform duration-300 ease-in-out {{ $isDrawerOpen ? 'translate-x-0' : 'translate-x-full' }}"
+                aria-labelledby="drawer-title" role="dialog" aria-modal="true">
                 <!-- Header -->
                 <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-xl font-medium text-gray-800">
-                        {{ $editingUserId ? 'Edit User' : 'Add New User' }}
+                    <h2 id="drawer-title" class="text-xl font-medium text-gray-800">
+                        {{ $editingUserId ? 'Update User' : 'Add User' }}
                     </h2>
                     <button wire:click="closeDrawer"
-                        class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-gray-100 rounded-full transition duration-150 cursor-pointer">
+                        class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-gray-100 rounded-full transition duration-150 cursor-pointer"
+                        aria-label="Close drawer">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -18,7 +19,6 @@
                         </svg>
                     </button>
                 </div>
-
                 <!-- Body -->
                 <div class="flex-1 overflow-y-auto px-6 py-5">
                     <form wire:submit.prevent="saveUser" class="space-y-5">
@@ -27,9 +27,15 @@
                             <select wire:model="user.role_id" id="user.role_id"
                                 class="mt-1 block w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring focus:border-blue-300">
                                 <option value="">Select user role</option>
-                                @foreach ($roles as $role)
-                                    <option value="{{ $role->id }}">{{ $role->roleName }}</option>
-                                @endforeach
+
+                                <!-- Check if $roles is set and not empty before looping -->
+                                @if (isset($roles) && count($roles) > 0)
+                                    @foreach ($roles as $role)
+                                        <option value="{{ $role->id }}">{{ $role->roleName }}</option>
+                                    @endforeach
+                                @else
+                                    <option value="">No roles available</option>
+                                @endif
                             </select>
                             @error('user.role_id')
                                 <span class="text-red-600 text-sm">{{ $errors->first('user.role_id') }}</span>

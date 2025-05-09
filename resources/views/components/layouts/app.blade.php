@@ -8,6 +8,7 @@
     <title>{{ $title ?? 'Page Title' }}</title>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <livewire:styles />
 </head>
 

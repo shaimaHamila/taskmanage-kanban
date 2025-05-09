@@ -18,6 +18,6 @@ class UserType extends Form
     #[Validate('required|email')]
     public $email;
 
-    #[Validate('required|min:6')]
+    #[Validate()]
     public $password;
 }

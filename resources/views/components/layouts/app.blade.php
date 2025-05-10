@@ -14,21 +14,6 @@
 
 <body class="h-full bg-gray-50">
     @auth
-        {{-- <div class="h-full"> --}}
-
-        {{-- <div class="md:pl-64 flex flex-col flex-1 h-full">
-                <div class="max-w-7xl px-4 sm:px-4 md:px-6 py-2 h-full">
-                    <!-- Replace with your content -->
-                    <div class="py-4 h-full">
-                        <div class=" bg-white rounded-lg h-full p-6">
-                            {{ $slot }}
-                        </div>
-                    </div>
-                    <!-- /End replace -->
-                </div>
-            </div> --}}
-        {{-- </div> --}}
-
         <livewire:component.layout.sidebar />
         <div class="md:pl-64 flex flex-col flex-1 h-full">
 
@@ -37,11 +22,9 @@
             <div class="h-full">
                 <div class="py-4 h-full">
                     <div class=" px-4 h-full">
-                        <!-- Replace with your content -->
                         <div class=" bg-white rounded-lg h-full p-6">
                             {{ $slot }}
                         </div>
-                        <!-- /End replace -->
                     </div>
                 </div>
             </div>

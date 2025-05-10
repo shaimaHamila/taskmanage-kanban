@@ -7,6 +7,8 @@ use Livewire\Form;
 
 class UserType extends Form
 {
+    public $id;
+
     #[Validate('required')]
     public $role_id;
     #[Validate('required|string|min:2')]

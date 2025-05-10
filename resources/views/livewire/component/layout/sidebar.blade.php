@@ -21,8 +21,8 @@
 
                 <!-- Sidebar content -->
                 <div class="flex flex-col h-full pt-8 overflow-y-auto">
-                    <div class="flex-shrink-0 flex items-center px-6">
-                        <img class="h-10 w-50" src="/svg/logo.svg" alt="Logo">
+                    <div class="flex-shrink-0 flex justify-center  items-center px-6">
+                        <img class="h-28" src="/png/logo.png" alt="Logo">
                     </div>
 
                     <nav class="flex-1 mt-8 px-4 space-y-2">
@@ -63,8 +63,8 @@
     <!-- Desktop sidebar -->
     <div class="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
         <div class="flex flex-col flex-grow border-r border-gray-100 pt-5  bg-white overflow-y-auto">
-            <div class="flex items-center flex-shrink-0 px-4">
-                <img class="h-10 w-auto" src="/svg/logo.svg" alt="Logo">
+            <div class="flex items-center justify-center flex-shrink-0 px-4">
+                <img class="h-28 w-auto" src="/png/logo.png" alt="Logo">
             </div>
 
             <div class="mt-16 flex-grow flex flex-col">

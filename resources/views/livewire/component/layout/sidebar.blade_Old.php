@@ -25,7 +25,7 @@
                 <!-- Mobile sidebar content -->
                 <div class="flex-1 flex flex-col h-full pt-8  overflow-y-auto">
                     <div class="flex-shrink-0 flex items-center px-6">
-                        <img class="h-10 w-50" src="/svg/logo.svg" alt="Logo">
+                        <img class="h-10 w-50" src="/png/logo.png" alt="Logo">
                     </div>
                     <nav class="mt-8 flex-1 px-4 space-y-2">
                         <!-- Tasks Management -->
@@ -82,7 +82,7 @@
         <div class="flex-1 flex flex-col min-h-0">
             <div class="flex-1 flex flex-col pt-8 pb-4 overflow-y-auto">
                 <div class="flex items-center flex-shrink-0 px-6">
-                    <img class="h-16 w-auto" src="/svg/logo.svg" alt="Workflow">
+                    <img class="h-16 w-auto" src="/png/logo.png" alt="Workflow">
                 </div>
 
                 <nav class="mt-8 flex-1 px-4 space-y-2 text-sm">

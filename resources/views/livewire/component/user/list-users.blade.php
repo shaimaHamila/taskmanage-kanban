@@ -33,7 +33,8 @@
                     </thead>
                     <tbody class="divide-y divide-gray-200">
                         @foreach ($users as $user)
-                            <tr class="hover:bg-gray-50 transition-colors duration-200">
+                            <tr wire:key="user-{{ $user->id }}"
+                                class="hover:bg-gray-50 transition-colors duration-200">
                                 <td class="py-4 px-6 text-sm text-gray-900">{{ $user->firstName }}</td>
                                 <td class="py-4 px-6 text-sm text-gray-900">{{ $user->lastName }}</td>
                                 <td class="py-4 px-6 text-sm text-gray-600">{{ $user->email }}</td>
@@ -68,15 +69,19 @@
                                             </svg>
                                         </button>
                                         <!-- Delete Button -->
-                                        <button wire:click="deleteUser({{ $user->id }})"
-                                            class="cursor-pointer px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-all duration-300 flex items-center gap-2">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                                                </path>
-                                            </svg>
-                                        </button>
+                                        @unless (Auth::id() === $user->id)
+                                            <!-- Delete Button -->
+                                            <button wire:click="deleteUser({{ $user->id }})"
+                                                class="cursor-pointer px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-all duration-300 flex items-center gap-2">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                    </path>
+                                                </svg>
+                                            </button>
+                                        @endunless
+
                                     </div>
                                 </td>
                             </tr>

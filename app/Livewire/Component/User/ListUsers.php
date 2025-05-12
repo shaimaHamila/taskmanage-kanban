@@ -23,36 +23,9 @@ class ListUsers extends Component
     }
     public function openUserDetails($userId)
     {
-        $user = User::find($userId);
-
-        // Dynamically passing user data to the drawer body
-        $content = view('livewire.component.user.user-details', compact('user'))->render();
-        $this->dispatch('open-drawer', [
-            'content' => $content,
-            'drawerTitle' => 'User Details',
-        ]);
+        $this->dispatch('open-user-details', userId: $userId);
     }
-    // public function createOrUpdateUserHandler($userId = null)
-    // {
-    //     // Check if userId is provided
-    //     if ($userId) {
-    //         // If userId is provided, we will update the user and pass only the id to the form
-    //         $content = (new \App\Livewire\Component\User\FormUser(userId: $userId))->render()->render();
 
-
-    //         $this->dispatch('open-drawer', [
-    //             'content' => $content,
-    //             'drawerTitle' => $userId ? 'Update user' : 'Create user',
-    //         ]);
-    //     } else {
-    //         // If no userId is provided, we will create a new user
-    //         $content = view('livewire.component.user.form-user', ['userId' => null])->render();
-    //         $this->dispatch('open-drawer', [
-    //             'content' => $content,
-    //             'drawerTitle' => 'Create user',
-    //         ]);
-    //     }
-    // }
     public function deleteUser($userId)
     {
         $user = User::find($userId);

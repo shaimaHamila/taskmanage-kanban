@@ -95,5 +95,5 @@
     <!-- Drawer for Add/Edit User -->
     <livewire:component.user.form-user />
     <!-- Drawer Component -->
-    <livewire:component.layout.drawer />
+    <livewire:component.user.user-details />
 </div>

@@ -9,4 +9,8 @@ enum TaskStatus: string
     case InReview = 'IN_REVIEW';
     case Done = 'DONE';
     case Cancelled = 'CANCELLED';
+    public static function values(): array
+    {
+        return array_column(self::cases(), 'value');
+    }
 }

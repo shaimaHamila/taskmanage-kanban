@@ -6,7 +6,9 @@ use Livewire\Component;
 use App\Models\Task;
 use App\Livewire\Forms\TaskType;
 use App\Models\User;
+use App\Enums\TaskStatus;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 
 class FormTask extends Component
 {
@@ -21,6 +23,7 @@ class FormTask extends Component
     }
     public function addOrUpdateTask($taskId = null)
     {
+
         $this->resetErrorBag();
         $this->task->reset();
 
@@ -37,6 +40,15 @@ class FormTask extends Component
     }
     public function saveTask()
     {
+        $user = Auth::user();
+
+        if ($user->role !== 'admin') {
+            $this->dispatch('alert', [
+                'type' => 'error',
+                'message' => 'Only Admins can create or update a task.',
+            ]);
+            return;
+        }
         $this->task->validate();
         try {
 
@@ -58,6 +70,34 @@ class FormTask extends Component
             ]);
             return;
         }
+    }
+    public function updateTaskStatus($taskId, $newStatus)
+    {
+        $this->resetErrorBag();
+
+        $task = $this->findTaskOrFail($taskId);
+
+        if (!in_array($newStatus, TaskStatus::values())) {
+            $this->dispatch('alert', [
+                'type' => 'error',
+                'message' => 'Invalid status value.',
+            ]);
+            return;
+        }
+
+        $task->update(['status' => $newStatus]);
+
+        $this->dispatch('alert', [
+            'type' => 'success',
+            'message' => 'Task status updated successfully.',
+        ]);
+
+        $this->dispatch('update-tasks-list');
+    }
+    public function findTaskOrFail($taskId)
+    {
+        $task = Task::findOrFail($taskId);
+        return $task;
     }
 
     public function render()

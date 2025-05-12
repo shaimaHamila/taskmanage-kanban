@@ -1,10 +1,13 @@
 <div>
     @if ($isDrawerOpen && $user)
-        <div
-            class="fixed inset-0 bg-black/50 z-[999] transition-opacity duration-300 ease-in-out {{ $isDrawerOpen ? 'opacity-100' : 'opacity-0' }}">
-            <div class="absolute top-0 right-0 w-full sm:w-1/2 h-screen bg-white shadow-2xl flex flex-col rounded-l-xl transition-transform duration-300 ease-in-out {{ $isDrawerOpen ? 'translate-x-0' : 'translate-x-full' }}"
-                aria-labelledby="drawer-title" role="dialog" aria-modal="true">
+        <!-- Backdrop -->
 
+        <div class="fixed inset-0 bg-black/50 z-[998] transition-opacity duration-100 ease-in-out">
+            <!-- Drawer -->
+            <div class="fixed top-0 right-0 w-full sm:w-1/2 h-screen bg-white shadow-2xl flex flex-col rounded-l-xl z-[999]
+                   transform transition-transform duration-100 ease-in-out
+                   {{ $isDrawerOpen ? 'translate-x-0' : 'translate-x-full' }}"
+                aria-labelledby="drawer-title" role="dialog" aria-modal="true">
                 <!-- Header -->
                 <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
                     <h2 id="drawer-title" class="text-xl font-medium text-gray-800">
@@ -25,7 +28,8 @@
                 <div class="flex-1 overflow-y-auto px-6 py-5">
                     <div class="flex flex-col items-center">
                         <div class="w-24 h-24 rounded-full border-4 border-indigo-500 avatar mb-6"
-                            style="background-image: url('https://i.pravatar.cc/150?u={{ $user->id }}');"></div>
+                            style="background-image: url('https://i.pravatar.cc/150?u={{ $user->id }}'); background-size: cover; background-position: center;">
+                        </div>
 
                         <h3 class="text-2xl font-bold text-gray-800 mb-4">User Details</h3>
                         <div class="w-full space-y-4">
@@ -47,5 +51,4 @@
             </div>
         </div>
     @endif
-
 </div>

@@ -9,14 +9,13 @@ use Livewire\Attributes\On;
 class UserDetails extends Component
 {
     public $user;
-
     public $isDrawerOpen = false;
-
 
     public function closeDrawer()
     {
         $this->isDrawerOpen = false;
     }
+
     #[On('open-user-details')]
     public function handleOpenUserDetails($userId)
     {

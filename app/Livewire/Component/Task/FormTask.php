@@ -38,7 +38,7 @@ class FormTask extends Component
             $this->editingTaskId = null;
         }
     }
-    public function saveTask()
+    public function saveTask($taskId, $newTaskTitle)
     {
         $user = Auth::user();
 
@@ -48,27 +48,29 @@ class FormTask extends Component
                 'message' => 'Only Admins can create or update a task.',
             ]);
             return;
-        }
-        $this->task->validate();
-        try {
+        } else {
 
-            Task::updateOrCreate(
-                ['id' => $this->editingTaskId],
-                $this->task->toArray()
-            );
+            $this->newTaskTitle->validate();
+            try {
 
-            $this->dispatch('alert', [
-                'type' => 'success',
-                'message' => $this->editingTaskId ? 'task updated successfully.' : 'task created successfully.',
-            ]);
-            $this->dispatch('update-tasks-list'); // Refresh the tasks list
+                Task::updateOrCreate(
+                    ['id' => $this->editingTaskId],
+                    $this->task->toArray()
+                );
 
-        } catch (Exception $e) {
-            $this->dispatch('notify', [
-                'type' => 'error',
-                'message' => 'An error occurred:' . $e->getMessage(),
-            ]);
-            return;
+                $this->dispatch('alert', [
+                    'type' => 'success',
+                    'message' => $this->editingTaskId ? 'task updated successfully.' : 'task created successfully.',
+                ]);
+                $this->dispatch('update-tasks-list'); // Refresh the tasks list
+
+            } catch (Exception $e) {
+                $this->dispatch('notify', [
+                    'type' => 'error',
+                    'message' => 'An error occurred:' . $e->getMessage(),
+                ]);
+                return;
+            }
         }
     }
     public function updateTaskStatus($taskId, $newStatus)

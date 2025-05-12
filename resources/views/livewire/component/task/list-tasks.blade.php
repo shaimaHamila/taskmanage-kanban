@@ -1,4 +1,4 @@
-<div class="overflow-x-auto border-1 border-gray-200 rounded-lg  p-4 h-full">
+<div class="overflow-x-auto border-1 border-gray-200 rounded-lg p-4 h-full">
     <div class="flex space-x-4 min-w-fit h-full">
         @php
             $statuses = [
@@ -11,7 +11,7 @@
         @endphp
 
         @foreach ($statuses as $key => $meta)
-            <div class="w-60 flex-shrink-0 bg-gray-50 rounded-xs shadow-xs p-3">
+            <div class="w-60 flex-shrink-0 bg-gray-50 rounded-xs shadow-inner p-3">
                 <!-- Column Header -->
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-md font-semibold text-{{ $meta['color'] }}-600">
@@ -23,13 +23,20 @@
                     </span>
                 </div>
 
-                <!-- Add Task Button (only in To Do) -->
-
+                <!-- Add Task Button (for every column) -->
                 <div class="mb-4">
-                    <div class="flex flex-row items-center text-gray-300 mt-2 px-1">
-                        <p class="rounded mr-2 text-2xl">+</p>
-                        <p class="pt-1 rounded text-sm">New</p>
-                    </div>
+                    @if ($showNewTaskInput === $key)
+                        <input type="text" wire:model.defer="newTask.title"
+                            wire:keydown.enter="createTask('{{ $key }}')"
+                            class="w-full border border-gray-300 rounded px-2 py-1 text-sm"
+                            placeholder="Enter task title..." autofocus />
+                    @else
+                        <button wire:click="handleShowNewTaskInput('{{ $key }}')"
+                            class="flex cursor-pointer items-center rounded bg-white text-gray-400 pb-1 px-2 w-full">
+                            <span class="text-2xl mr-2">+</span>
+                            <span class="text-sm pt-1">New</span>
+                        </button>
+                    @endif
                 </div>
 
                 <!-- Task Cards -->

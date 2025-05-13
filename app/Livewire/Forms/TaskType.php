@@ -14,9 +14,12 @@ class TaskType extends Form
 
     #[Validate('nullable|string')]
     public $description;
-    #[Validate('required|enum:' . TaskStatus::class)]
+    #[Validate('required')]
     public $status;
 
-    #[Validate('required|exists:users,id')]
+    #[Validate('exists:users,id')]
     public $user_id;
+
+    public $created_at;
+    public $updated_at;
 }

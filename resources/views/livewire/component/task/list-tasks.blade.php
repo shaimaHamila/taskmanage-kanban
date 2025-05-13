@@ -53,7 +53,7 @@
                                     {{-- Action Icons --}}
                                     <div class="flex items-center space-x-1">
                                         {{-- Edit --}}
-                                        <button title="Edit"
+                                        <button title="Edit" wire:click="handleTaskUpdate({{ $task->id }})"
                                             class="p-1 rounded-full cursor-pointer text-gray-400 hover:text-blue-400 hover:bg-blue-100 transition-all">
                                             <x-heroicon-o-pencil-square class="h-4.5 w-4.5" />
                                         </button>
@@ -65,19 +65,29 @@
                                     </div>
                                 @endif
                             </div>
-
                             {{-- Status --}}
                             <p class="bg-{{ $meta['color'] }}-100 text-xs w-max p-1 rounded mr-2 text-gray-700">
                                 {{ $task->status }}
                             </p>
 
                             {{-- User --}}
-                            <div class="flex flex-row items-center mt-2">
-                                <div class="bg-gray-300 rounded-full w-4 h-4 mr-1"></div>
-                                <p class="text-xs text-gray-500">
-                                    {{ $task->user ? $task->user->firstName . ' ' . $task->user->lastName : 'Unknown' }}
-                                </p>
-                            </div>
+                            @if ($task->user)
+                                <div class="flex flex-row items-center mt-2">
+                                    <div class="bg-gray-300 rounded-full w-4 h-4 mr-1"
+                                        style="background-image: url('https://i.pravatar.cc/150?u={{ $task->user->id }}'); background-size: cover; background-position: center;">
+                                    </div>
+                                    <p class="text-xs text-gray-500">
+                                        {{ $task->user ? $task->user->firstName . ' ' . $task->user->lastName : 'Unknown' }}
+                                    </p>
+                                </div>
+                            @else
+                                <div class="flex flex-row items-center mt-2">
+
+                                    <p class="text-xs text-gray-500">
+                                        Not assigned
+                                    </p>
+                                </div>
+                            @endif
 
                             {{-- Created At --}}
                             <p class="text-xs text-gray-500 mt-3">

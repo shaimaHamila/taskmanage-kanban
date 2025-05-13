@@ -60,6 +60,21 @@ class ListTasks extends Component
         }
     }
 
+    public function handleTaskUpdate($taskId)
+    {
+        $user = Auth::user();
+
+        if ($user->role->roleName !== 'admin') {
+            $this->dispatch('alert', [
+                'type' => 'error',
+                'message' => 'Only Admins can update a task.',
+            ]);
+            return;
+        }
+
+        $this->dispatch('open-task-update-drawer', $taskId);
+    }
+
     public function deleteTask($taskId)
     {
         $user = Auth::user();

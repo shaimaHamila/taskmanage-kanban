@@ -14,27 +14,51 @@ class FormTask extends Component
 {
 
     public $editingTaskId = null;
+    public TaskType $task;
+    public $users = [];
+    public $taskStatus = TaskStatus::class;
+
+    public function mount()
+    {
+        $this->users = User::where('role_id', 2)->get();
+    }
+
+    public $isDrawerOpen = false;
+
+    public function closeDrawer()
+    {
+        $this->isDrawerOpen = false;
+    }
+
+    #[On('open-task-update-drawer')]
+    public function handleOpenTaskUpdateDrawer($taskId)
+    {
+        $task = $this->findTaskOrFail($taskId);
+        $this->editingTaskId = $taskId;
+        $this->task->id = $task->id;
+        $this->task->title = $task->title;
+        $this->task->description = $task->description;
+        $this->task->status = $task->status->value; // because it's an enum
+        $this->task->user_id = $task->user_id;
+        $this->task->created_at = $task->created_at;
+        $this->task->updated_at = $task->updated_at;
+        $this->isDrawerOpen = true;
+    }
+
+
 
     #[On('save-task')]
-    public function saveTask($data)
+    public function saveTask($data = null)
     {
-        $taskId = $data['taskId'];
-        $newTask = $data['newTask'];
-        if ($taskId) {
-            $this->findTaskOrFail($taskId);
-        }
+        // For task creation, we require the newTask data
+        $newTask = $this->editingTaskId ? $this->task->toArray() : $data['newTask'];
         try {
             Task::updateOrCreate(
-                ['id' => $taskId],
+                ['id' => $this->editingTaskId],
                 $newTask
             );
-
-            $this->dispatch('alert', [
-                'type' => 'success',
-                'message' => $taskId ? 'Task updated successfully.' : 'Task created successfully.',
-            ]);
-
-            $this->dispatch('update-tasks-list');
+            $this->dispatch('loadTasks');
+            $this->closeDrawer();
         } catch (Exception $e) {
             $this->dispatch('notify', [
                 'type' => 'error',
@@ -63,7 +87,7 @@ class FormTask extends Component
             'message' => 'Task status updated successfully.',
         ]);
 
-        $this->dispatch('update-tasks-list');
+        $this->dispatch('loadTasks');
     }
     public function findTaskOrFail($taskId)
     {

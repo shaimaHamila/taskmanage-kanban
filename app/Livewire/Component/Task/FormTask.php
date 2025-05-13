@@ -8,69 +8,38 @@ use App\Livewire\Forms\TaskType;
 use App\Models\User;
 use App\Enums\TaskStatus;
 use Exception;
-use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\On;
 
 class FormTask extends Component
 {
-    public TaskType $task;
+
     public $editingTaskId = null;
-    public $users = [];
 
-
-    public function mount()
+    #[On('save-task')]
+    public function saveTask($data)
     {
-        $this->users = User::all();
-    }
-    public function addOrUpdateTask($taskId = null)
-    {
-
-        $this->resetErrorBag();
-        $this->task->reset();
-
-        // If editing an existing task, load the data.
+        $taskId = $data['taskId'];
+        $newTask = $data['newTask'];
         if ($taskId) {
-            $taskToUpdate = Task::findOrFail($taskId);
-            $this->task->title = $taskToUpdate->title;
-            $this->task->description = $taskToUpdate->description;
-            $this->task->user_id = $taskToUpdate->user_id;
-            $this->editingTaskId = $taskToUpdate->id;
-        } else {
-            $this->editingTaskId = null;
+            $this->findTaskOrFail($taskId);
         }
-    }
-    public function saveTask($taskId, $newTaskTitle)
-    {
-        $user = Auth::user();
+        try {
+            Task::updateOrCreate(
+                ['id' => $taskId],
+                $newTask
+            );
 
-        if ($user->role !== 'admin') {
             $this->dispatch('alert', [
-                'type' => 'error',
-                'message' => 'Only Admins can create or update a task.',
+                'type' => 'success',
+                'message' => $taskId ? 'Task updated successfully.' : 'Task created successfully.',
             ]);
-            return;
-        } else {
 
-            $this->newTaskTitle->validate();
-            try {
-
-                Task::updateOrCreate(
-                    ['id' => $this->editingTaskId],
-                    $this->task->toArray()
-                );
-
-                $this->dispatch('alert', [
-                    'type' => 'success',
-                    'message' => $this->editingTaskId ? 'task updated successfully.' : 'task created successfully.',
-                ]);
-                $this->dispatch('update-tasks-list'); // Refresh the tasks list
-
-            } catch (Exception $e) {
-                $this->dispatch('notify', [
-                    'type' => 'error',
-                    'message' => 'An error occurred:' . $e->getMessage(),
-                ]);
-                return;
-            }
+            $this->dispatch('update-tasks-list');
+        } catch (Exception $e) {
+            $this->dispatch('notify', [
+                'type' => 'error',
+                'message' => 'An error occurred: ' . $e->getMessage(),
+            ]);
         }
     }
     public function updateTaskStatus($taskId, $newStatus)

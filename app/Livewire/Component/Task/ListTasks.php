@@ -91,11 +91,6 @@ class ListTasks extends Component
             $task = Task::findOrFail($taskId);
             $task->delete();
 
-            $this->dispatch('alert', [
-                'type' => 'success',
-                'message' => 'Task deleted successfully.',
-            ]);
-
             // 👇 Custom event to refresh task list
             $this->dispatch('loadTasks');
         } catch (ModelNotFoundException $e) {
@@ -111,6 +106,10 @@ class ListTasks extends Component
         }
     }
 
+    public function handleTaskDetails($taskId)
+    {
+        $this->dispatch('open-task-details-drawer', $taskId);
+    }
     protected $listeners = ['loadTasks' => 'loadTasks'];
     public function loadTasks()
     {

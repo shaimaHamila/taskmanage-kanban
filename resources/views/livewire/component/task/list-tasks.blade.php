@@ -13,7 +13,7 @@
         @foreach ($statuses as $key => $meta)
             <div class="w-60 flex-shrink-0 bg-gray-50 rounded-xs shadow-inner p-3">
                 <!-- Column Header -->
-                <div class="flex justify-between items-center mb-4">
+                <div class="flex justify-between items-center mb-6">
                     <h2 class="text-md font-semibold text-{{ $meta['color'] }}-600">
                         {{ $meta['label'] }}
                     </h2>
@@ -22,28 +22,11 @@
                         {{ $tasks->where('status', $key)->count() }} task(s)
                     </span>
                 </div>
-
-                <!-- Add Task Button (for every column) -->
-                <div class="mb-4">
-                    @if ($showNewTaskInput === $key)
-                        <input type="text" wire:model.defer="newTask.title"
-                            wire:keydown.enter="createTask('{{ $key }}')"
-                            class="w-full border border-gray-300 rounded px-2 py-1 text-sm"
-                            placeholder="Enter task title..." autofocus />
-                    @else
-                        <button wire:click="handleShowNewTaskInput('{{ $key }}')"
-                            class="flex cursor-pointer items-center rounded bg-white text-gray-400 pb-1 px-2 w-full">
-                            <span class="text-2xl mr-2">+</span>
-                            <span class="text-sm pt-1">New</span>
-                        </button>
-                    @endif
-                </div>
-
                 <!-- Task Cards -->
-                <div class="space-y-3">
+                <div class="space-y-3 mt-4">
                     @foreach ($tasks->where('status', $key) as $task)
-                        <div wire:key="{{ $task->id }}"
-                            class="p-2 rounded shadow-sm border-gray-100 border-2 bg-white">
+                        <div wire:key="{{ $task->id }}" wire:click="handleTaskDetails('{{ $task->id }}')"
+                            class="p-2 cursor-pointer rounded shadow-sm border-gray-100 border-2 bg-white">
                             {{-- Title and Action Icons --}}
                             <div class="flex justify-between items-start">
                                 <h3 class="text-sm mb-3 text-gray-700 font-medium truncate max-w-[75%]">
@@ -53,12 +36,12 @@
                                     {{-- Action Icons --}}
                                     <div class="flex items-center space-x-1">
                                         {{-- Edit --}}
-                                        <button title="Edit" wire:click="handleTaskUpdate({{ $task->id }})"
+                                        <button title="Edit" wire:click.stop="handleTaskUpdate({{ $task->id }})"
                                             class="p-1 rounded-full cursor-pointer text-gray-400 hover:text-blue-400 hover:bg-blue-100 transition-all">
                                             <x-heroicon-o-pencil-square class="h-4.5 w-4.5" />
                                         </button>
                                         {{-- Delete --}}
-                                        <button title="Delete" wire:click="deleteTask({{ $task->id }})"
+                                        <button title="Delete" wire:click.stop="deleteTask({{ $task->id }})"
                                             class="p-1 rounded-full cursor-pointer text-gray-400 hover:text-rose-400 hover:bg-rose-100 transition-all">
                                             <x-heroicon-o-trash class="h-4.5 w-4.5" />
                                         </button>
@@ -96,8 +79,26 @@
                         </div>
                     @endforeach
                 </div>
+
+
+                <!-- Add Task Button (for every column) -->
+                <div class="mt-4">
+                    @if ($showNewTaskInput === $key)
+                        <input type="text" wire:model.defer="newTask.title"
+                            wire:keydown.enter="createTask('{{ $key }}')"
+                            class="w-full border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-300 px-2 py-1 text-sm"
+                            placeholder="Enter task title..." autofocus />
+                    @else
+                        <button wire:click="handleShowNewTaskInput('{{ $key }}')"
+                            class="flex cursor-pointer items-center rounded hover:bg-white text-gray-400 pb-1 px-2 w-full">
+                            <span class="text-2xl mr-2">+</span>
+                            <span class="text-sm pt-1">New</span>
+                        </button>
+                    @endif
+                </div>
             </div>
         @endforeach
     </div>
     <livewire:component.task.form-task />
+    <livewire:component.task.task-details />
 </div>

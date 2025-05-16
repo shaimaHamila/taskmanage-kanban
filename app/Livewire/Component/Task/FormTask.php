@@ -33,6 +33,7 @@ class FormTask extends Component
     #[On('open-task-update-drawer')]
     public function handleOpenTaskUpdateDrawer($taskId)
     {
+
         $task = $this->findTaskOrFail($taskId);
         $this->editingTaskId = $taskId;
         $this->task->id = $task->id;
@@ -42,6 +43,7 @@ class FormTask extends Component
         $this->task->user_id = $task->user_id;
         $this->task->created_at = $task->created_at;
         $this->task->updated_at = $task->updated_at;
+        $this->task->order = $task->order;
         $this->isDrawerOpen = true;
     }
 
@@ -50,6 +52,7 @@ class FormTask extends Component
     #[On('save-task')]
     public function saveTask($data = null)
     {
+
         // For task creation, we require the newTask data
         $newTask = $this->editingTaskId ? $this->task->toArray() : $data['newTask'];
         try {

@@ -19,6 +19,8 @@ class TaskType extends Form
 
     #[Validate('exists:users,id')]
     public $user_id;
+    #[Validate('integer')]
+    public $order;
 
     public $created_at;
     public $updated_at;

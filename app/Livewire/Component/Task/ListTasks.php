@@ -7,6 +7,7 @@ use Livewire\Component;
 use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -18,10 +19,18 @@ class ListTasks extends Component
 
     protected $listeners = ['loadTasks' => 'loadTasks', 'updateTaskOrder'];
 
+    // Status configuration for reuse
+    protected $statuses = [
+        'TODO' => ['label' => 'TODO', 'color' => 'gray'],
+        'IN_PROGRESS' => ['label' => 'IN PROGRESS', 'color' => 'blue'],
+        'IN_REVIEW' => ['label' => 'IN REVIEW', 'color' => 'yellow'],
+        'DONE' => ['label' => 'DONE', 'color' => 'green'],
+        'CANCELLED' => ['label' => 'CANCELLED', 'color' => 'red'],
+    ];
+
     public function mount()
     {
-
-        $this->loadTasks(); // ✅ Load tasks on mount
+        $this->loadTasks();
     }
 
     public function loadTasks()
@@ -29,16 +38,23 @@ class ListTasks extends Component
         $user = Auth::user();
 
         if ($user->role->roleName === 'admin') {
-            $this->tasks = Task::orderBy('order')->get();
+            $this->tasks = Task::with('user')->orderBy('order')->get();
         } elseif ($user->role->roleName === 'employee') {
-            $this->tasks = Task::where('user_id', $user->id)->orderBy('order')->get();
+            $this->tasks = Task::with('user')
+                ->where('user_id', $user->id)
+                ->orderBy('order')
+                ->get();
         } else {
-            $this->tasks = collect(); // empty collection
+            $this->tasks = collect();
         }
     }
 
     public function handleShowNewTaskInput($key)
     {
+        if (!array_key_exists($key, $this->statuses)) {
+            Log::warning('Invalid status key', ['key' => $key]);
+            return;
+        }
         $this->showNewTaskInput = $key;
     }
 
@@ -55,48 +71,54 @@ class ListTasks extends Component
         if ($user->role->roleName !== 'admin') {
             $this->dispatch('alert', [
                 'type' => 'error',
-                'message' => 'Only Admins can create or update a task.',
+                'message' => 'Only Admins can create tasks.',
             ]);
             return;
         }
 
-        $this->newTask->status = $this->showNewTaskInput;
-        $this->newTask->created_at = now();
-        $this->newTask->order = (Task::max('order') ?? 0) + 1;
+        try {
+            $this->newTask->status = $this->showNewTaskInput;
+            $this->newTask->created_at = now();
+            $this->newTask->order = (Task::max('order') ?? 0) + 1;
 
-        $taskId = null;
-        //Dispatch create task event
-        $this->dispatch('save-task', ['taskId' => $taskId, 'newTask' => $this->newTask->toArray()]);
+            $taskData = $this->newTask->toArray();
+            Task::create($taskData);
 
-        $this->newTask->reset();
-        $this->showNewTaskInput = null;
-        $this->dispatch('loadTasks');
+            $this->newTask->reset();
+            $this->showNewTaskInput = null;
+            $this->dispatch('loadTasks');
+
+            $this->dispatch('alert', [
+                'type' => 'success',
+                'message' => 'Task created successfully.',
+            ]);
+        } catch (Exception $e) {
+            Log::error('Failed to create task', ['error' => $e->getMessage()]);
+            $this->dispatch('alert', [
+                'type' => 'error',
+                'message' => 'Failed to create task.',
+            ]);
+        }
     }
 
     public function handleTaskUpdate($taskId)
     {
-        dd($taskId);
-        $user = Auth::user();
-
-        if ($user->role->roleName !== 'admin') {
+        if (Auth::user()->role->roleName !== 'admin') {
             $this->dispatch('alert', [
                 'type' => 'error',
-                'message' => 'Only Admins can update a task.',
+                'message' => 'Only Admins can update tasks.',
             ]);
             return;
         }
-
         $this->dispatch('open-task-update-drawer', $taskId);
     }
 
     public function deleteTask($taskId)
     {
-        $user = Auth::user();
-
-        if ($user->role->roleName !== 'admin') {
+        if (Auth::user()->role->roleName !== 'admin') {
             $this->dispatch('alert', [
                 'type' => 'error',
-                'message' => 'Only Admins can delete a task.',
+                'message' => 'Only Admins can delete tasks.',
             ]);
             return;
         }
@@ -106,49 +128,97 @@ class ListTasks extends Component
             $task->delete();
 
             $this->dispatch('loadTasks');
-        } catch (ModelNotFoundException $e) {
+            $this->dispatch('alert', [
+                'type' => 'success',
+                'message' => 'Task deleted successfully.',
+            ]);
+        } catch (ModelNotFoundException) {
+            Log::warning('Task not found for deletion', ['taskId' => $taskId]);
             $this->dispatch('alert', [
                 'type' => 'error',
                 'message' => 'Task not found.',
             ]);
         } catch (Exception $e) {
+            Log::error('Failed to delete task', ['taskId' => $taskId, 'error' => $e->getMessage()]);
             $this->dispatch('alert', [
                 'type' => 'error',
-                'message' => 'An error occurred while deleting the task.',
+                'message' => 'Failed to delete task.',
             ]);
         }
     }
-    public function fixAllTaskOrders()
-    {
-        $tasks = Task::orderBy('created_at')->get();
 
-        foreach ($tasks as $index => $task) {
-            $task->order = $index + 1;
-            $task->save();
-        }
-    }
 
     public function handleTaskDetails($taskId)
     {
         $this->dispatch('open-task-details-drawer', $taskId);
     }
 
+
     public function updateTaskOrder($status, $orderedIds)
     {
-        DB::transaction(function () use ($status, $orderedIds) {
-            foreach ($orderedIds as $index => $id) {
-                Task::where('id', $id)->update([
-                    'status' => $status,
-                    'order' => $index + 1,
-                ]);
-            }
-        });
 
-        $this->loadTasks();
+        if (!array_key_exists($status, $this->statuses)) {
+            Log::warning('Invalid status received', ['status' => $status]);
+            return;
+        }
+
+        if (empty($orderedIds)) {
+            Log::warning('No ordered IDs received', ['status' => $status]);
+            return;
+        }
+
+        try {
+            dd("fffffffffffffffff");
+            DB::transaction(function () use ($status, $orderedIds) {
+                foreach ($orderedIds as $index => $id) {
+                    if (!Task::where('id', $id)->exists()) {
+                        Log::warning('Invalid task ID', ['id' => $id]);
+                        continue;
+                    }
+                    Task::where('id', $id)->update([
+                        'status' => $status,
+                        'order' => $index + 1,
+                    ]);
+                }
+            });
+
+            $this->loadTasks();
+            Log::info('Task order updated', ['status' => $status, 'orderedIds' => $orderedIds]);
+        } catch (Exception $e) {
+            Log::error('Failed to update task order', [
+                'status' => $status,
+                'orderedIds' => $orderedIds,
+                'error' => $e->getMessage(),
+            ]);
+            $this->dispatch('alert', [
+                'type' => 'error',
+                'message' => 'Failed to update task order.',
+            ]);
+        }
+    }
+    public function taskDropped($data)
+    {
+        $task = \App\Models\Task::find($data['taskId']);
+
+        if (!$task) return;
+
+        $task->update([
+            'status' => $data['toStatus'],
+            'order' => $data['newOrder'],
+        ]);
+
+        // Normalize order in new column
+        $tasks = \App\Models\Task::where('status', $data['toStatus'])->orderBy('order')->get();
+
+        foreach ($tasks as $index => $t) {
+            $t->update(['order' => $index]);
+        }
     }
 
     public function render()
     {
-        return view('livewire.component.task.list-tasks');
+        return view('livewire.component.task.list-tasks', [
+            'statuses' => $this->statuses,
+        ]);
     }
 }

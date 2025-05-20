@@ -25,26 +25,16 @@
                 <div class="bg-gray-50 rounded-xs px-1 overflow-y-auto h-[calc(100vh-200px)] flex-1 scrollbar-custom">
                     <!-- Task Cards -->
                     <div x-data="{
-                        handle(item, newIndex, oldIndex, from, to) {
-                            const fromStatus = from?.closest('.task-column')?.dataset?.status;
-                            const toStatus = to?.closest('.task-column')?.dataset?.status;
-
-                            if (!fromStatus || !toStatus) {
-                                console.warn('Could not determine statuses', { from, to });
-                                return;
-                            }
-
-                            Livewire.dispatch('task-dropped', {
-                                taskId: item,
-                                fromStatus,
-                                toStatus,
-                                newOrder: newIndex
-                            });
+                        handle(item, position) {
+                            const newStatus = $el.closest('[data-status]').getAttribute('data-status');
+                            console.warn('Could not determine statuses', { item, position, newStatus });
+                    
+                            @this.call('taskDropped', item, position, newStatus);
                         }
-                    }" x-sort="handle" x-sort:group="tasks" class="task-column bg-amber-300"
-                        data-status="{{ $key }}" id="column-{{ $key }}">
+                    }" x-sort="handle($item, $position)" x-sort:group="tasks"
+                        class="task-column " data-status="{{ $key }}" id="column-{{ $key }}">
                         @foreach ($tasks->where('status', $key)->sortBy('order') as $task)
-                            <div x-sort:item="{{ $task->id }}" wire:key="task-{{ $task->id }}"
+                            <div x-sort:item="{{ $task }}" wire:key="task-{{ $task->id }}"
                                 id="task-{{ $task->id }}" class="p-2 cursor-pointer rounded border-2 bg-white mb-2"
                                 wire:click="handleTaskDetails('{{ $task->id }}')" style="border-color: #bc9d2031;">
                                 <!-- Task Content -->

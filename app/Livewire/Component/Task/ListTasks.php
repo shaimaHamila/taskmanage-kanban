@@ -100,6 +100,16 @@ class ListTasks extends Component
             ]);
         }
     }
+    public function updateTaskOrder($status, $orderedIds)
+    {
+        foreach ($orderedIds as $position => $id) {
+            Task::where('id', $id)
+                ->where('status', $status) // Optional: ensures you're updating tasks only in the same column
+                ->update(['order' => $position]);
+        }
+
+        $this->dispatch('loadTasks');
+    }
 
     public function handleTaskUpdate($taskId)
     {
@@ -154,66 +164,23 @@ class ListTasks extends Component
     }
 
 
-    public function updateTaskOrder($status, $orderedIds)
+    public function taskDropped($task, $position, $newStatus = null)
     {
-
-        if (!array_key_exists($status, $this->statuses)) {
-            Log::warning('Invalid status received', ['status' => $status]);
-            return;
-        }
-
-        if (empty($orderedIds)) {
-            Log::warning('No ordered IDs received', ['status' => $status]);
-            return;
-        }
-
-        try {
-            dd("fffffffffffffffff");
-            DB::transaction(function () use ($status, $orderedIds) {
-                foreach ($orderedIds as $index => $id) {
-                    if (!Task::where('id', $id)->exists()) {
-                        Log::warning('Invalid task ID', ['id' => $id]);
-                        continue;
-                    }
-                    Task::where('id', $id)->update([
-                        'status' => $status,
-                        'order' => $index + 1,
-                    ]);
-                }
-            });
-
-            $this->loadTasks();
-            Log::info('Task order updated', ['status' => $status, 'orderedIds' => $orderedIds]);
-        } catch (Exception $e) {
-            Log::error('Failed to update task order', [
-                'status' => $status,
-                'orderedIds' => $orderedIds,
-                'error' => $e->getMessage(),
-            ]);
-            $this->dispatch('alert', [
-                'type' => 'error',
-                'message' => 'Failed to update task order.',
-            ]);
-        }
-    }
-    public function taskDropped($data)
-    {
-        $task = \App\Models\Task::find($data['taskId']);
+        $task = Task::find($task['id']);
 
         if (!$task) return;
 
-        $task->update([
-            'status' => $data['toStatus'],
-            'order' => $data['newOrder'],
-        ]);
+        $task->order = $position;
 
-        // Normalize order in new column
-        $tasks = \App\Models\Task::where('status', $data['toStatus'])->orderBy('order')->get();
-
-        foreach ($tasks as $index => $t) {
-            $t->update(['order' => $index]);
+        if ($newStatus !== null) {
+            $task->status = $newStatus;
         }
+
+        $task->save();
+
+        $this->dispatch('loadTasks');
     }
+
 
     public function render()
     {
